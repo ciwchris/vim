@@ -151,12 +151,12 @@ nnoremap j gj
 nnoremap k gk
 
 " Copy & paster system clipboard
-vmap <Leader>y "+y 
-vmap <Leader>d "+d 
-nmap <Leader>p "+p 
-nmap <Leader>P "+P 
-vmap <Leader>p "+p 
-vmap <Leader>P "+P
+vmap <Leader>y "*y 
+vmap <Leader>d "*d 
+nmap <Leader>p "*p 
+nmap <Leader>P "*P 
+vmap <Leader>p "*p 
+vmap <Leader>P "*P
 
 " Ignores
 set wildignore+=*.gif,*.png,*.jpg
