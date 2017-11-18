@@ -1,27 +1,34 @@
 " .vimrc
 " Author: Christopher Lopes <christopher.lopes@gmail.com>
 
-
 " Preamble ---------------------------------------------------------------- {{{
 
 " dein config: https://github.com/Shougo/dein.vim
 if &compatible
-  set nocompatible
+    set nocompatible
 endif
 set runtimepath+=~/.vim/bundles/repos/github.com/Shougo/dein.vim
 
 if dein#load_state('~/.vim/bundles/')
-  call dein#begin('~/.vim/bundles/')
+    call dein#begin('~/.vim/bundles/')
 
-  call dein#add('~/.vim/bundles/repos/github.com/Shougo/dein.vim')
-  call dein#add('Shougo/neocomplete.vim')
-  call dein#add('altercation/vim-colors-solarized')
-  call dein#add('itchyny/lightline.vim')
-  call dein#add('vim-scripts/bufexplorer.zip')
-  call dein#add('tpope/vim-commentary')
+    call dein#add('~/.vim/bundles/repos/github.com/Shougo/dein.vim')
+    call dein#add('altercation/vim-colors-solarized')
+    call dein#add('itchyny/lightline.vim')
+    call dein#add('vim-scripts/bufexplorer.zip')
+    call dein#add('junegunn/fzf.vim')
 
-  call dein#end()
-  call dein#save_state()
+    call dein#add('tpope/vim-commentary')
+    call dein#add('Shougo/deoplete.nvim')
+    call dein#add('Shougo/denite.nvim')
+    call dein#add('Shougo/neocomplete.vim')
+
+    call dein#add('beloglazov/vim-online-thesaurus')
+
+    call dein#add('OmniSharp/omnisharp-vim')
+
+    call dein#end()
+    call dein#save_state()
 endif
 
 filetype plugin indent on
@@ -191,6 +198,20 @@ map <leader>v :view %%
 
 " }}}
 
+" NeoVim {{{
+
+" Snow substitution when typing
+
+if has('nvim')
+    :set inccommand=nosplit
+
+    " Arch fzf install location of plugin
+    set runtimepath+=/usr/share/vim/vimfiles/
+
+endif
+
+" }}}
+"
 " Digraphs {{{
 
 " To use: ":set digraph" then: ".<BS>-"
@@ -250,6 +271,8 @@ syntax enable
 let &background=s:background_color[0]
 colorscheme solarized
 
+" OmniSharp
+let g:OmniSharp_server_type = 'roslyn'
 
 " }}}
 
