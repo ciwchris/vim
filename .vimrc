@@ -15,17 +15,28 @@ if dein#load_state('~/.vim/bundles/')
     call dein#add('~/.vim/bundles/repos/github.com/Shougo/dein.vim')
     call dein#add('altercation/vim-colors-solarized')
     call dein#add('itchyny/lightline.vim')
-    call dein#add('vim-scripts/bufexplorer.zip')
     call dein#add('junegunn/fzf.vim')
+    call dein#add('editorconfig/editorconfig-vim')
 
     call dein#add('tpope/vim-commentary')
     call dein#add('Shougo/deoplete.nvim')
     call dein#add('Shougo/denite.nvim')
     call dein#add('Shougo/neocomplete.vim')
+    call dein#add('w0rp/ale')
 
     call dein#add('beloglazov/vim-online-thesaurus')
 
-    call dein#add('OmniSharp/omnisharp-vim')
+    call dein#add('OrangeT/vim-csharp')
+    call dein#add('OmniSharp/omnisharp-vim', {
+                \ 'build': 'sh -c "cd server/ && xbuild"',
+                \ 'on_ft': 'cs'
+                \ })
+    call dein#add('https://gitlab.com/mixedCase/deoplete-omnisharp.git', {
+                \ 'on_ft': 'cs'
+                \ })
+
+    call dein#add('mhartington/nvim-typescript')
+    call dein#add('HerringtonDarkholme/yats.vim')
 
     call dein#end()
     call dein#save_state()
@@ -271,9 +282,83 @@ syntax enable
 let &background=s:background_color[0]
 colorscheme solarized
 
-" OmniSharp
-let g:OmniSharp_server_type = 'roslyn'
+" ALE
 
+let g:ale_lint_on_text_changed = 'never'
+let g:ale_lint_on_enter = 1
+let g:ale_sign_column_always = 0
+
+let g:ale_sign_error = '✗'
+let g:ale_sign_warning = '❱'
+
+highlight ALEWarning ctermbg=DarkMagenta
+highlight ALEError ctermbg=DarkRed
+
+highlight clear SignColumn
+" highlight clear ALEErrorSign
+" highlight clear ALEWarningSign
+
+nnoremap <leader>an :ALENextWrap<cr>
+nnoremap <leader>ap :ALEPreviousWrap<cr>
+
+" FZF
+
+nnoremap <leader>zb :Buffers<cr>
+nnoremap <leader>zh :History<cr>
+nnoremap <leader>zl :BLines<cr>
+nnoremap <leader>zg :GFiles?<cr>
+
+
+" OmniSharp
+
+let g:OmniSharp_selector_ui='fzf'
+
+augroup omnisharp_commands
+    autocmd!
+
+    "Set autocomplete function to OmniSharp (if not using YouCompleteMe completion plugin)
+    autocmd FileType cs setlocal omnifunc=OmniSharp#Complete
+
+    " Synchronous build (blocks Vim)
+    "autocmd FileType cs nnoremap <F5> :wa!<cr>:OmniSharpBuild<cr>
+    " Builds can also run asynchronously with vim-dispatch installed
+    autocmd FileType cs nnoremap <leader>b :wa!<cr>:OmniSharpBuildAsync<cr>
+    " automatic syntax check on events (TextChanged requires Vim 7.4)
+    " autocmd BufEnter,TextChanged,InsertLeave *.cs SyntasticCheck
+
+    " Automatically add new cs files to the nearest project on save
+    autocmd BufWritePost *.cs call OmniSharp#AddToProject()
+
+    "show type information automatically when the cursor stops moving
+    autocmd CursorHold *.cs call OmniSharp#TypeLookupWithoutDocumentation()
+
+    "The following commands are contextual, based on the current cursor position.
+    autocmd FileType cs nnoremap gd :OmniSharpGotoDefinition<cr>
+    autocmd FileType cs nnoremap <leader>fi :OmniSharpFindImplementations<cr>
+    autocmd FileType cs nnoremap <leader>ft :OmniSharpFindType<cr>
+    autocmd FileType cs nnoremap <leader>fs :OmniSharpFindSymbol<cr>
+    autocmd FileType cs nnoremap <leader>fu :OmniSharpFindUsages<cr>
+    "
+    " cursor can be anywhere on the line containing an issue
+    autocmd FileType cs nnoremap <leader>xi :OmniSharpFixIssue<cr>
+    autocmd FileType cs nnoremap <leader>xu :OmniSharpFixUsings<cr>
+    autocmd FileType cs nnoremap <leader>tt :OmniSharpTypeLookup<cr>
+    autocmd FileType cs nnoremap <leader>dc :OmniSharpDocumentation<cr>
+augroup END
+"
+"
+" Preview window at bottom
+set splitbelow
+
+" Contextual code actions (requires CtrlP or unite.vim)
+nnoremap <leader><space> :OmniSharpGetCodeActions<cr>
+" Run code actions with text selected in visual mode to extract method
+vnoremap <leader><space> :call OmniSharp#GetCodeActions('visual')<cr>
+
+nnoremap <leader>cf :OmniSharpCodeFormat<cr>
+nnoremap <leader>nm :OmniSharpRename<cr>
+nnoremap <leader>tp :OmniSharpAddToProject<cr>
+nnoremap <leader>th :OmniSharpHighlightTypes<cr>
 " }}}
 
 " Highlight word {{{
