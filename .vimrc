@@ -9,6 +9,7 @@ if &compatible
 endif
 set runtimepath+=~/.vim/bundles/repos/github.com/Shougo/dein.vim
 
+" When removing an add need to call: call dein#recache_runtimepath()
 if dein#load_state('~/.vim/bundles/')
     call dein#begin('~/.vim/bundles/')
 
@@ -22,7 +23,9 @@ if dein#load_state('~/.vim/bundles/')
     call dein#add('Shougo/deoplete.nvim')
     call dein#add('Shougo/denite.nvim')
     call dein#add('Shougo/neocomplete.vim')
-    call dein#add('w0rp/ale')
+    " Doesn't support OmniSharp
+"    call dein#add('w0rp/ale')
+    call dein#add('vim-syntastic/syntastic')
 
     call dein#add('beloglazov/vim-online-thesaurus')
 
@@ -219,6 +222,8 @@ if has('nvim')
     " Arch fzf install location of plugin
     set runtimepath+=/usr/share/vim/vimfiles/
 
+    " Easy exit terminal
+    tnoremap <Esc> <C-\><C-n>
 endif
 
 " }}}
@@ -301,17 +306,39 @@ highlight clear SignColumn
 nnoremap <leader>an :ALENextWrap<cr>
 nnoremap <leader>ap :ALEPreviousWrap<cr>
 
+" Syntastic
+
+"set statusline+=%#warningmsg#
+"set statusline+=%{SyntasticStatuslineFlag()}
+"set statusline+=%*
+
+let g:syntastic_always_populate_loc_list = 1
+let g:syntastic_auto_loc_list = 1
+let g:syntastic_check_on_open = 1
+let g:syntastic_check_on_wq = 0
+
+" Setting to work with roslyn
+"let g:syntastic_cs_checkers = ['code_checker']
+let g:syntastic_cs_checkers = ['syntax', 'semantic', 'issues']
+
+let g:syntastic_error_symbol='✗'
+let g:syntastic_warning_symbol='⚠'
+
+
 " FZF
 
 nnoremap <leader>zb :Buffers<cr>
 nnoremap <leader>zh :History<cr>
+nnoremap <leader>zf :Files<cr>
 nnoremap <leader>zl :BLines<cr>
 nnoremap <leader>zg :GFiles?<cr>
 
 
 " OmniSharp
 
+"let g:OmniSharp_server_type = 'roslyn'
 let g:OmniSharp_selector_ui='fzf'
+
 
 augroup omnisharp_commands
     autocmd!
@@ -322,9 +349,9 @@ augroup omnisharp_commands
     " Synchronous build (blocks Vim)
     "autocmd FileType cs nnoremap <F5> :wa!<cr>:OmniSharpBuild<cr>
     " Builds can also run asynchronously with vim-dispatch installed
-    autocmd FileType cs nnoremap <leader>b :wa!<cr>:OmniSharpBuildAsync<cr>
+    autocmd FileType cs nnoremap <leader>b :wa!<cr>:OmniSharpBuild<cr>
     " automatic syntax check on events (TextChanged requires Vim 7.4)
-    " autocmd BufEnter,TextChanged,InsertLeave *.cs SyntasticCheck
+    autocmd BufEnter,TextChanged,InsertLeave *.cs SyntasticCheck
 
     " Automatically add new cs files to the nearest project on save
     autocmd BufWritePost *.cs call OmniSharp#AddToProject()
